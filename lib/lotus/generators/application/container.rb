@@ -44,7 +44,8 @@ module Lotus
           empty_directories = [
             "db",
             "lib/#{ app_name }/entities",
-            "lib/#{ app_name }/repositories"
+            "lib/#{ app_name }/repositories",
+            "lib/#{ app_name }/interactors",
           ]
 
           case options[:test]
@@ -67,6 +68,7 @@ module Lotus
           empty_directories << [
             "spec/#{ app_name }/entities",
             "spec/#{ app_name }/repositories",
+            "spec/#{ app_name }/interactors",
             "spec/support"
           ]
 

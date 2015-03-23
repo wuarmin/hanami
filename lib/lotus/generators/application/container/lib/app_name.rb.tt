@@ -1,4 +1,5 @@
 require 'lotus/model'
+require 'lotus/interactor'
 Dir["#{ __dir__ }/<%= config[:app_name] %>/**/*.rb"].each { |file| require_relative file }
 
 Lotus::Model.configure do

@@ -345,6 +345,7 @@ describe Lotus::Commands::New do
         content = @root.join('lib/chirp.rb').read
         content.must_match 'Dir["#{ __dir__ }/chirp/**/*.rb"].each { |file| require_relative file }'
         content.must_match %(require 'lotus/model')
+        content.must_match %(require 'lotus/interactor')
         content.must_match %(Lotus::Model.configure)
         content.must_match %(adapter type: :file_system, uri: ENV['CHIRP_DATABASE_URL'])
         content.must_match %(mapping do)
@@ -434,10 +435,17 @@ describe Lotus::Commands::New do
       end
     end
 
+    describe 'lib/chirp/interactors' do
+      it 'generates it' do
+        @root.join('lib/chirp/interactors').must_be :directory?
+      end
+    end
+
     describe 'empty spec/* directory' do
       it 'generates it' do
         @root.join('spec/chirp/entities').must_be :directory?
         @root.join('spec/chirp/repositories').must_be :directory?
+        @root.join('spec/chirp/interactors').must_be :directory?
         @root.join('spec/support').must_be :directory?
       end
     end
