@@ -473,6 +473,14 @@ module Lotus
       end
     end
 
+    def push_promises(value = nil)
+      if value.nil?
+        @push_promises || false
+      else
+        @push_promises = !!value
+      end
+    end
+
     # Configure cookies
     # Enable cookies (disabled by default).
     #

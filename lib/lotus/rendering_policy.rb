@@ -14,18 +14,25 @@ module Lotus
 
     LOTUS_ACTION = 'lotus.action'.freeze
 
+    PUSH_PROMISES_LINK  = 'Link'.freeze
     SUCCESSFUL_STATUSES = (200..201).freeze
     RENDERABLE_FORMATS  = [:all, :html].freeze
+    CONTENT_TYPE = 'Content-Type'.freeze
+
+    HTTP_VIA = 'HTTP_VIA'.freeze
+    NGHTTPX  = '2 nghttpx'.freeze
 
     def initialize(configuration)
       @controller_pattern = %r{#{ configuration.controller_pattern.gsub(/\%\{(controller|action)\}/) { "(?<#{ $1 }>(.*))" } }}
       @view_pattern       = configuration.view_pattern
       @namespace          = configuration.namespace
       @templates          = configuration.templates
+      @push_promises      = configuration.push_promises
     end
 
     def render(env, response)
       body = _render(env, response)
+      push_promises!(env, response)
 
       response[BODY] = Array(body) unless body.nil?
       response
@@ -72,6 +79,28 @@ module Lotus
       else
         Views::NullView.new(response[BODY])
       end
+    end
+
+    def push_promises!(env, response)
+      return unless push_promises?(env, response)
+      response[HEADERS][PUSH_PROMISES_LINK] = push_promises
+    end
+
+    def push_promises?(env, response)
+      @push_promises &&
+        env[HTTP_VIA] == NGHTTPX &&
+        response[HEADERS][CONTENT_TYPE].match(/\Atext\/html/)
+    end
+
+    def push_promises
+      assets = ""
+
+      Lotus::Assets::ThreadCache.for_each_asset do |asset|
+        next if asset.nil? || URI.regexp.match(asset)
+        assets << "\n<#{ asset }>; rel=preload"
+      end
+
+      assets
     end
   end
 end
