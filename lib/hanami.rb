@@ -87,6 +87,7 @@ module Hanami
   # @since 0.9.0
   def self.boot
     Components.release if code_reloading?
+    Components.release('model')
     Components.resolve('all')
   end
 

@@ -108,8 +108,14 @@ module Hanami
     #
     # @since 1.0.0.beta1
     # @api private
-    def self.release
-      @_resolved.clear
+    def self.release(*names)
+      components = Array(names).flatten
+
+      if components.any?
+        components.each { |component| @_resolved.delete(component) }
+      else
+        @_resolved.clear
+      end
     end
 
     require 'hanami/components/component'
