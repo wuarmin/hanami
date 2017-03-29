@@ -78,10 +78,6 @@ module Hanami
     register 'model' do
       requires 'logger', 'model.configuration', 'model.sql'
 
-      prepare do
-        Hanami::Model.disconnect if Components['model.configuration']
-      end
-
       resolve do
         if Components['model.configuration']
           Hanami::Model.load!
@@ -139,6 +135,18 @@ module Hanami
 
       resolve do
         true if defined?(Hanami::Model::Sql)
+      end
+    end
+
+    # Disconnects the database
+    #
+    # @since next
+    # @api private
+    register 'model.disconnector' do
+      requires 'model.configuration'
+
+      run do
+        Hanami::Model.disconnect if Components['model.configuration']
       end
     end
 

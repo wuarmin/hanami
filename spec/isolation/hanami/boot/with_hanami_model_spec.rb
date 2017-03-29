@@ -5,6 +5,7 @@ RSpec.describe "Hanami.boot", type: :cli do
         generate "app admin"
 
         require Pathname.new(Dir.pwd).join("config", "environment")
+        expect(Hanami::Model).to receive(:disconnect)
         Hanami.boot
 
         expect(Hanami::Components['all']).to  be(true)
@@ -14,6 +15,7 @@ RSpec.describe "Hanami.boot", type: :cli do
         expect(Hanami::Components['model.sql']).to           be(true)
         expect(Hanami::Components['model.configuration']).to be_kind_of(Hanami::Model::Configuration)
         expect(Hanami::Components['model.bundled']).to       be(true)
+        expect(Hanami::Components['model.disconnector']).to  be(nil)
 
         expect(Hanami::Components['admin']).to be(true)
         expect(Hanami::Components['web']).to   be(true)
