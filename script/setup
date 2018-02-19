@@ -10,8 +10,18 @@ cleanup() {
 }
 
 bundle_package() {
-  bundle package --all
+  bundle install --retry=10 --jobs=$(_cpu_count) --path=vendor/cache --no-prune
   echo ""
+}
+
+_cpu_count() {
+    if [ -f /proc/cpuinfo ]; then
+      echo $(grep -c ^processor /proc/cpuinfo)
+    elif [ -z "$(command -v sysctl)" ]; then
+      echo $(sysctl -n hw.cpu)
+    else
+      echo 1
+    fi
 }
 
 install_hanami_frameworks() {
