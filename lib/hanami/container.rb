@@ -112,24 +112,24 @@ module Hanami
         loader = Loaders::View.new(c[:configuration].inflections)
 
         c[:apps].each do |app|
-          require c.root.join("apps", app.to_s, "view").to_s
+          # require c.root.join("apps", app.to_s, "view").to_s
 
-          superclass = Utils::String.classify("#{app}::View")
-          superclass = Utils::Class.load!(superclass)
+          # superclass = Utils::String.classify("#{app}::View")
+          # superclass = Utils::Class.load!(superclass)
 
-          templates = [c.root.join("apps", app.to_s, "templates").to_s]
-          superclass.config.paths = templates
-          superclass.config.layouts_dir = templates
+          # templates = [c.root.join("apps", app.to_s, "templates").to_s]
+          # superclass.config.paths = templates
+          # superclass.config.layouts_dir = templates
 
-          superclass.config.layout = "application"
+          # superclass.config.layout = "application"
 
-          namespace = nil
+          # namespace = nil
 
           begin
             namespace = Utils::String.classify("#{app}::Views")
-            namespace = Utils::Class.load!(namespace)
+            # namespace = Utils::Class.load!(namespace)
 
-            register(:"apps.#{app}.views.namespace", namespace)
+            # register(:"apps.#{app}.views.namespace", namespace)
           rescue LoadError, NameError # rubocop:disable Lint/HandleExceptions
             # FIXME: This loading mechanism should respect missing views to support API apps.
           end
