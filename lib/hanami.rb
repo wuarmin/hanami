@@ -79,20 +79,4 @@ module Hanami
   def self.bundler_groups
     [:plugins]
   end
-
-
-  def self.application_view(app)
-    require "hanami/view"
-
-    # TODO: work out nicer way to reference
-    c = Hanami::Container
-
-    templates = [c.root.join("apps", app.to_s, "templates").to_s]
-
-    Class.new(Hanami::View) do
-      config.paths = templates
-      config.layouts_dir = templates
-      config.layout = "application"
-    end
-  end
 end

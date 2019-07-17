@@ -17,6 +17,13 @@ module Hanami
       config.root = Pathname.new(Dir.pwd)
     end
 
+    # This makes it possible to properly require files from within sub-app dirs,
+    # e.g. `require "web/view"`.
+    #
+    # This is a temporary measure; we need to have a real discussion about
+    # container/sub-app setup and file loading in general.
+    load_paths! "apps"
+
     boot(:env) do |c|
       init do
         begin
@@ -106,40 +113,15 @@ module Hanami
 
     boot(:views) do |c| # rubocop:disable Metrics/BlockLength
       init do
-        use :configuration
         use :apps
+        use :configuration
 
         loader = Loaders::View.new(c[:configuration].inflections)
 
         c[:apps].each do |app|
-          # require c.root.join("apps", app.to_s, "view").to_s
-
-          # superclass = Utils::String.classify("#{app}::View")
-          # superclass = Utils::Class.load!(superclass)
-
-          # templates = [c.root.join("apps", app.to_s, "templates").to_s]
-          # superclass.config.paths = templates
-          # superclass.config.layouts_dir = templates
-
-          # superclass.config.layout = "application"
-
-          # namespace = nil
-
-          begin
-            namespace = Utils::String.classify("#{app}::Views")
-            # namespace = Utils::Class.load!(namespace)
-
-            # register(:"apps.#{app}.views.namespace", namespace)
-          rescue LoadError, NameError # rubocop:disable Lint/HandleExceptions
-            # FIXME: This loading mechanism should respect missing views to support API apps.
-          end
-
-          # FIXME: use actual configuration from hanami-view
-          configuration = :config
-
           Hanami::Utils::FileList[c.root, "apps", app.to_s, "views", "**", "*.rb"].each do |path|
-            view = loader.call(app, path, configuration, namespace)
-            register(:"apps.#{view.name}", view) unless view.nil?
+            view = loader.call(app, path)
+            register(:"apps.#{view.name}", view) if view
           end
         end
       end

@@ -5,6 +5,7 @@ require "hanami/router"
 require "hanami/controller"
 require "hanami/utils/string"
 require "hanami/utils/class"
+require "hanami/view/extensions"
 
 # Hanami
 #
