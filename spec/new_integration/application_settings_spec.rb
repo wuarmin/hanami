@@ -10,6 +10,7 @@ RSpec.describe "Application settings", :application_integration do
   end
 
   specify "Settings defined in config/settings.rb are loaded from .env and run through optional callable (type) objects" do
+    $debug = true
     with_tmp_directory(Dir.mktmpdir) do
       write "config/application.rb", <<~RUBY
         require "hanami"
@@ -26,8 +27,17 @@ RSpec.describe "Application settings", :application_integration do
         Hanami.application.settings do
           setting :database_url
           setting :redis_url
-          setting :feature_flag, TestApp::Types::Params::Bool
-          setting :feature_flag_with_default, TestApp::Types::Params::Bool.optional.default(false)
+          # setting :feature_flag, TestApp::Types::Params::Bool
+          # setting :feature_flag_with_default, TestApp::Types::Params::Bool.optional.default(false)
+
+          # setting(:feature_flag) { |v| TestApp::Types::Params::Bool[v] }
+          # setting(:feature_flag_with_default, false) { |v| TestApp::Types::Params::Bool[v] }
+
+          setting(:feature_flag, &TestApp::Types::Params::Bool)
+          setting(:feature_flag_with_default, false, &TestApp::Types::Params::Bool)
+
+          # setting :feature_flag, TestApp::Types::Params::Bool
+          # setting :feature_flag_with_default, TestApp::Types::Params::Bool, default: false
         end
       RUBY
 
